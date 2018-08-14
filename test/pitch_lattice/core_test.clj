@@ -4,7 +4,7 @@
 
 (deftest test-factors
   (let [result (pl/factors 81)]
-    (is (= '(81 27 9 3 1) result))))
+    (is (= (sort '(1 3 9 27 81)) (sort result)))))
 
 (deftest test-prime?
   (let [result (pl/prime? 13)]
