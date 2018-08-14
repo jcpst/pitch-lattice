@@ -1,15 +1,6 @@
-(ns pitch-lattice.core
-  (:require [clojure.pprint :as pprint]))
+(ns pitch-lattice.core)
 
-;; TODO
-;; Have each pitch in the lattice be a record with a
-;;  :cent         -- Decimal
-;;  :ratio        -- Ratio
-;;  :alpha        -- String
-;;  :accidentals  -- String Vector
-;;
-;; Change this to generate loom graphs
-(defrecord Pitch [cent ratio alpha accidentals])
+(defrecord Pitch [cent ratio alpha accidentals]) ;; TODO - use this
 (defrecord LatticeSet [otonal utonal])
 (defrecord Lattice [root vertical horizontal])
 
@@ -76,12 +67,6 @@
   (LatticeSet.
     (lattice-walk otonal-step ratio steps)
     (lattice-walk utonal-step ratio steps)))
-
-
-
-
-
-
 
 (defn generate-lattice
   "Builds an entire 2-D pitch lattice"
