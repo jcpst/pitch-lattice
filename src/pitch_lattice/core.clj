@@ -4,10 +4,15 @@
 (defrecord LatticeSet [otonal utonal])
 (defrecord Lattice [root vertical horizontal])
 
+(defn range-inc
+  "Make range upper bound inclusive"
+  [num]
+  (range 1 (+ num 1)))
+
 (defn factors
   "Get the factors of a number"
   [num]
-  (filter #(zero? (rem num %)) (range 1 (+ num 1))))
+  (filter #(zero? (rem num %)) (range-inc num)))
 
 (defn prime?
   "Determine if a number is prime"
@@ -16,21 +21,24 @@
 
 (defn ratio-to-list
   "Converts a ratio to a list"
-  [ratio]
-  (list (numerator ratio) (denominator ratio)))
+  [num]
+  (if (ratio? num)
+    (list (numerator num) (denominator num))
+    (list num)))
 
 (defn recip
   "Returns the reciprocal of a ratio"
-  [ratio]
-  (/ (denominator ratio) (numerator ratio)))
+  [num]
+  (if (ratio? num)
+    (/ (denominator num) (numerator num))
+    (/ 1 num)))
 
 (defn flatten-ratio
   "Brings the size of a ratio in between 1 and 2"
   [ratio]
-  (cond
-    (> ratio 2) (recur (/ ratio 2))
-    (< ratio 1) (recur (* ratio 2))
-    :else ratio))
+  (cond (> ratio 2) (recur (/ ratio 2))
+        (< ratio 1) (recur (* ratio 2))
+        :else ratio))
 
 (defn flip-ratio
   "Flips the numerator and denominator in a ratio"
@@ -47,30 +55,25 @@
   [& ratios]
   (flatten-ratio (apply * ratios)))
 
-(defn otonal-step
-  "Takes one step up the lattice"
-  [steps ratio]
-  (apply add-ratios (replicate steps ratio)))
-
-(defn utonal-step
-  "Takes one step down the lattice"
-  [steps ratio]
-  (apply add-ratios (map flip-ratio (replicate steps ratio))))
+(defn step
+  "Interval size on the lattice based on direction and limit"
+  [direction limit]
+  (flatten-ratio
+    (condp = direction
+      :otonal limit
+      :utonal (recip limit))))
 
 (defn lattice-walk
   "Creates a list of steps in one direction on the lattice"
-  [direction ratio steps]
-  (map direction (range 1 (+ steps 1)) (replicate steps ratio)))
+  [step num]
+  (map #(apply add-ratios (replicate % step)) (range-inc num)))
 
-(defn gen-lattice-set
-  [ratio steps]
-  (LatticeSet.
-    (lattice-walk otonal-step ratio steps)
-    (lattice-walk utonal-step ratio steps)))
+; ----
+; test
+; ----
+(def partial-limit (limit 81/64))
+(def ratio (step :otonal partial-limit))
+(def rows 5)
 
-(defn generate-lattice
-  "Builds an entire 2-D pitch lattice"
-  [vratio vsteps hratio hsteps]
-  (Lattice. 1
-            (gen-lattice-set vratio vsteps)
-            (gen-lattice-set hratio hsteps)))
+(println
+  (lattice-walk ratio rows))

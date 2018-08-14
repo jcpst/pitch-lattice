@@ -33,12 +33,3 @@
 (deftest test-add-ratios
   (let [result (pl/add-ratios 3/2 3/2)]
     (is (= 9/8 result))))
-
-(deftest test-otonal-step
-  (let [result (pl/otonal-step 2 3/2)]
-    (is (= 9/8 result))))
-
-;; TODO: Not sure why utonal-step blows up...
-;(deftest test-utonal-step
-;  (let [result (pl/utonal-step 2 4/3)]
-;    (is (= 16/9 result))))
