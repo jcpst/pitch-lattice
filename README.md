@@ -1,14 +1,7 @@
 # pitch-lattice
 
-A Clojure library designed to ... well, that part is up to you.
+[![Build Status](https://travis-ci.org/jcpst/pitch-lattice.svg?branch=master)](https://travis-ci.org/jcpst/pitch-lattice)
 
-## Usage
-
-FIXME
-
-## License
-
-Copyright © 2018 FIXME
-
-Distributed under the Eclipse Public License either version 1.0 or (at
-your option) any later version.
+* Library for calculating multi-dimensional pitch lattices. 
+* An excuse to learn clojure.
+* Very much a work in progress.
