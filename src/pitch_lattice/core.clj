@@ -16,7 +16,7 @@
 (defn factors
   "Get the factors of a number"
   [num]
-  (map #(/ num %) (filter #(zero? (rem num %)) (range 1 (+ num 1)))))
+  (filter #(zero? (rem num %)) (range 1 (+ num 1))))
 
 (defn prime?
   "Determine if a number is prime"
