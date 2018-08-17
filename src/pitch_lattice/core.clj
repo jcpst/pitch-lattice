@@ -1,8 +1,8 @@
-(ns pitch-lattice.core)
+(ns pitch-lattice.core
+  (:require [clojure.pprint :as p]))
 
-(defrecord Pitch [cent ratio alpha accidentals]) ;; TODO - use this
-(defrecord LatticeSet [otonal utonal])
-(defrecord Lattice [root vertical horizontal])
+(defrecord Pitch [cent ratio])
+(defrecord Set [pitches transposition limit])
 
 (defn range-inc
   "Make range upper bound inclusive"
@@ -25,6 +25,11 @@
   (if (ratio? num)
     (list (numerator num) (denominator num))
     (list num)))
+
+(defn ratio-to-cents
+  "Converts a ratio to cents"
+  [ratio]
+  (* (Math/log10 ratio) (/ 1200 (Math/log10 2))))
 
 (defn recip
   "Returns the reciprocal of a ratio"
@@ -50,10 +55,15 @@
   [ratio]
   (apply max (filter prime? (mapcat factors (ratio-to-list ratio)))))
 
-(defn add-ratios
+(defn sum-ratios
   "Add an arbitrary number of ratios"
   [& ratios]
   (flatten-ratio (apply * ratios)))
+
+(defn diff-ratios
+  "Get the difference between two ratios"
+  [x y]
+  (flatten-ratio (/ x y)))
 
 (defn step
   "Interval size on the lattice based on direction and limit"
@@ -63,17 +73,29 @@
       :otonal limit
       :utonal (recip limit))))
 
+(defn make-pitch
+  "Constructs a Pitch record"
+  [ratio]
+  (->Pitch (ratio-to-cents ratio) ratio))
+
 (defn lattice-walk
   "Creates a list of steps in one direction on the lattice"
   [step num]
-  (map #(apply add-ratios (replicate % step)) (range-inc num)))
+  (map #(make-pitch (apply sum-ratios (replicate % step))) (range-inc num)))
+
+(defn make-set
+  ""
+  [transposition limit steps]
+  (->Set (lattice-walk (step transposition limit) steps) transposition limit))
+
+;TODO - get-scale = sort a collection of "make-set"s by ratio size
 
 ; ----
 ; test
 ; ----
-(def partial-limit (limit 81/64))
-(def ratio (step :otonal partial-limit))
-(def rows 5)
-
-(println
-  (lattice-walk ratio rows))
+(p/pprint
+  (list
+    (make-set :otonal 3 3)
+    (make-set :utonal 3 3)
+    (make-set :otonal 5 3)
+    (make-set :utonal 5 3)))

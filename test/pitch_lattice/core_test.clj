@@ -31,5 +31,5 @@
     (is (= 13 result))))
 
 (deftest test-add-ratios
-  (let [result (pl/add-ratios 3/2 3/2)]
+  (let [result (pl/sum-ratios 3/2 3/2)]
     (is (= 9/8 result))))
