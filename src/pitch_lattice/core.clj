@@ -41,9 +41,10 @@
 (defn flatten-ratio
   "Brings the size of a ratio in between 1 and 2"
   [ratio]
-  (cond (> ratio 2) (recur (/ ratio 2))
-        (< ratio 1) (recur (* ratio 2))
-        :else ratio))
+  (cond
+    (> ratio 2) (recur (/ ratio 2))
+    (< ratio 1) (recur (* ratio 2))
+    :else ratio))
 
 (defn flip-ratio
   "Flips the numerator and denominator in a ratio"
