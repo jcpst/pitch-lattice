@@ -15,29 +15,17 @@
 
 (defun factors (n)
   "Get the factors of a number"
-  (remove-if 
+  (remove-if-not 
 	(lambda (x) (zerop (rem n x)))
 	(range-inc n)))
 
 (defun primep (n)
   "Determine if a number is prime
-   From here: https://stackoverflow.com/a/15817766/3957261"
-  (cond 
-    ((= 1 n) nil)
-    ((= 2 n) t)
-    ((= 3 n) t)
-    ((evenp n) nil)
-    (t (loop for i 
-             from 3 to (isqrt n) 
-	     by 2 
-	     never (zerop (mod n i))))))
-
-; from PCL ---
-;(defun primep (n)
-;  (when (> n 1)
-;    (loop for i 
-;          from 2 to (isqrt n)
-;          never (zerop (mod n i)))))
+   From 'Practical Common Lisp', Ch 8"
+  (when (> n 1)
+    (loop for i 
+          from 2 to (isqrt n)
+          never (zerop (mod n i)))))
 
 (defun ratio-to-list (n)
   "Converts a ratio to a list"
@@ -67,10 +55,15 @@
   (flatten-ratio (recip ratio)))
 
 ; limit
+; clojure implementation
+;(defn limit
+;  "Calculates the partial limit of a ratio"
+;  [ratio]
+;  (apply max (filter prime? (mapcat factors (ratio-to-list ratio)))))
+
 ;(defun limit (ratio)
 ;  "Calculates the partial limit of a ratio"
-;  (apply #'max (remove-if-not primep
-;    ((concatenate (map 'list #'factors (ratio-to-list 3/2)))
+;  (apply #'max (remove-if-not primep ((concatenate (map 'list #'factors (ratio-to-list 3/2)))))))
 ; sum-ratios
 ; diff-ratios
 ; step
