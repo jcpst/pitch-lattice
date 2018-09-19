@@ -1,8 +1,9 @@
 (ns pitch-lattice.core
   (:require [clojure.pprint :as p]))
 
-(defrecord Pitch [cent ratio])
+(defrecord Pitch [cent ratio transposition limit degree])
 (defrecord Set [pitches transposition limit])
+(defrecord Lattice [scale set])
 
 (defn range-inc
   "Make range upper bound inclusive"
@@ -26,10 +27,10 @@
     (list (numerator num) (denominator num))
     (list num)))
 
-(defn ratio-to-cents
-  "Converts a ratio to cents"
-  [ratio]
-  (* (Math/log10 ratio) (/ 1200 (Math/log10 2))))
+(defn power-of-two?
+  "Determines if a number is a power of two"
+  [num]
+  (and (not (zero? num)) (zero? (bit-and num (- num 1)))))
 
 (defn recip
   "Returns the reciprocal of a ratio"
@@ -37,6 +38,11 @@
   (if (ratio? num)
     (/ (denominator num) (numerator num))
     (/ 1 num)))
+
+(defn ratio-to-cents
+  "Converts a ratio to cents"
+  [ratio]
+  (* (Math/log10 ratio) (/ 1200 (Math/log10 2))))
 
 (defn flatten-ratio
   "Brings the size of a ratio in between 1 and 2"
@@ -77,9 +83,18 @@
 (defn make-pitch
   "Constructs a Pitch record"
   [ratio]
-  (->Pitch (ratio-to-cents ratio) ratio))
+  (->Pitch (ratio-to-cents ratio) ratio nil (limit ratio) nil))
 
-(defn lattice-walk
+;TODO - doesn't work for 7/5
+(defn find-ordinal
+  ""
+  [ratio]
+  (let [x (map #(power-of-two? (int %)) (ratio-to-list ratio))]
+    (cond
+      (first x) :utonal
+      (last x) :otonal)))
+
+(defn ordinal-walk
   "Creates a list of steps in one direction on the lattice"
   [step num]
   (map #(make-pitch (apply sum-ratios (replicate % step))) (range-inc num)))
@@ -87,16 +102,33 @@
 (defn make-set
   ""
   [transposition limit steps]
-  (->Set (lattice-walk (step transposition limit) steps) transposition limit))
+  (->Set (ordinal-walk (step transposition limit) steps) transposition limit))
 
 ;TODO - get-scale = sort a collection of "make-set"s by ratio size
 
 ; ----
 ; test
 ; ----
-(p/pprint
-  (list
-    (make-set :otonal 3 3)
-    (make-set :utonal 3 3)
-    (make-set :otonal 5 3)
-    (make-set :utonal 5 3)))
+(def pitches (list (make-set :otonal 3 3)
+                   (make-set :utonal 3 3)
+                   (make-set :otonal 5 3)
+                   (make-set :utonal 5 3)))
+(def testdata (->Lattice
+                (map make-pitch (sort < (map :ratio (mapcat :pitches pitches))))
+                pitches))
+
+(p/pprint testdata)
+; generate a 2-d list based on:
+; - limits desired in tuning
+; - number of steps out
+
+; link any ratio, and generate a new lattice as root
+; add a 'relative' record {:base :ratio}
+
+; How to represent the data
+; ---
+; ({:ratio
+;   :cent
+;   :transposition
+;   :limit
+;   :scaledegree})
