@@ -32,6 +32,13 @@
 	     by 2 
 	     never (zerop (mod n i))))))
 
+; from PCL ---
+;(defun primep (n)
+;  (when (> n 1)
+;    (loop for i 
+;          from 2 to (isqrt n)
+;          never (zerop (mod n i)))))
+
 (defun ratio-to-list (n)
   "Converts a ratio to a list"
   (list (numerator n) (denominator n)))
