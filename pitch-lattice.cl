@@ -84,10 +84,10 @@
 ; (sort (concatenate 
 ;         'list 
 ;         '(1)
-;		  (walk (lattice-relation 3 :utonal) 3) 
-;		  (walk (lattice-relation 3 :otonal) 3) 
-;		  (walk (lattice-relation 5 :otonal) 2)) 
-;	    #'<)
+;         (walk (lattice-relation 3 :utonal) 3) 
+;         (walk (lattice-relation 3 :otonal) 3) 
+;         (walk (lattice-relation 5 :otonal) 2)) 
+;       #'<)
 ; -> (1 9/8 32/27 5/4 4/3 3/2 25/16 27/16 16/9)
 
 
