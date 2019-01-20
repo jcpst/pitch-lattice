@@ -1,5 +1,4 @@
 ; For generating pitch lattices
-;
 
 (defstruct pitch cent ratio transposition limit degree)
 
@@ -67,27 +66,28 @@
   "Takes a walk in one direction on the pitch lattice"
   (mapcar 
 	#'(lambda (x)
-		"Adds up ratios"
 		(flatten-ratio 
 		  (apply '* (make-list x :initial-element r)))) 
 	(range-inc iter)))
 
+(defun gen-lattice (limits size)
+  "Generate collection of ratios with a given set of limits"
+  (concatenate 
+	'list '(1)
+	(loop for x in limits collect
+		  (list (walk (lattice-relation x :utonal) size)
+				(walk (lattice-relation x :otonal) size)))))
 
 ; examples
 ; --------
 ; (walk (lattice-relation 5 :otonal) 3)
 ; -> (5/4 25/16 125/64)
 
-; (walk (lattice-relation 3 :utonal) 5)
-; -> (4/3 16/9 32/27 128/81 256/243)
+; (gen-lattice '(3 5) 3)
+; -> (1 ((4/3 16/9 32/27) (3/2 9/8 27/16)) ((8/5 32/25 128/125) (5/4 25/16 125/64)))
 
-; (sort (concatenate 
-;         'list 
-;         '(1)
-;         (walk (lattice-relation 3 :utonal) 3) 
-;         (walk (lattice-relation 3 :otonal) 3) 
-;         (walk (lattice-relation 5 :otonal) 2)) 
-;       #'<)
-; -> (1 9/8 32/27 5/4 4/3 3/2 25/16 27/16 16/9)
+; (sort (flatten (gen-lattice '(3 5) 2)) #'<)
+; -> (1 9/8 5/4 32/25 4/3 3/2 25/16 8/5 16/9)
 
+; TODO: build a list of pitch structs from sorted lattice
 
